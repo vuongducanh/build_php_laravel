@@ -56,8 +56,10 @@ return [
 
         'single' => [
             'driver' => 'single',
+            'tap' => [App\Logging\CustomizeFormatter::class],
             'path' => storage_path('logs/laravel.log'),
             'level' => env('LOG_LEVEL', 'debug'),
+            'level' => 'debug',
         ],
 
         'daily' => [
@@ -112,6 +114,12 @@ return [
 
         'emergency' => [
             'path' => storage_path('logs/laravel.log'),
+        ],
+
+        'database' => [
+            'driver' => 'database',
+            'table' => 'logs',
+            'level' => 'debug',
         ],
     ],
 

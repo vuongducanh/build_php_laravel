@@ -7,6 +7,7 @@ use Illuminate\Http\Request;
 use App\Models\Product;
 use Illuminate\Http\Response;
 use function App\Helpers\Helper;
+use Log;
 
 class ProductionController extends Controller
 {
@@ -27,11 +28,12 @@ class ProductionController extends Controller
             $total = $products->total();
 
             $response = formatApiResponse($data, $currentPage, $perPage, $total);
+            Log::info("Show list product success");
+            Log::channel('database')->info('Show list product success');
 
             return response()->json($response);
         } catch (\Exception $e) {
-            // Xử lý ngoại lệ và trả về thông báo lỗi
-            return response()->json(['error' => 'Đã xảy ra lỗi trong quá trình xử lý.'], 500);
+            return response()->json(['error' => 'An error occurred during processing.'], 500);
         }
     }
 
@@ -43,6 +45,7 @@ class ProductionController extends Controller
      */
     public function store(Request $request)
     {
+        Log::info("Create product success");
         return Product::create($request->all());
     }
 
@@ -58,11 +61,13 @@ class ProductionController extends Controller
             $product = Product::find($id);
 
             if (!$product) {
-                throw new \Exception('Bản ghi không tồn tại');
+                throw new \Exception('The record does not exist');
             }
 
+            Log::info("Get detail product success");
             return $product;
         } catch (\Exception $e) {
+            Log::error("Get detail failed!");
             return response()->json(['message' => $e->getMessage()], 404);
         }
     }
@@ -80,13 +85,15 @@ class ProductionController extends Controller
             $product = Product::find($id);
 
             if (!$product) {
-                throw new \Exception('Bản ghi không tồn tại');
+                throw new \Exception('The record does not exist');
             }
 
             $product->update($request->all());
 
-            return response()->json(['message' => 'Cập nhật bản ghi thành công']);
+            Log::info("Update product success");
+            return response()->json(['message' => 'Record update successful']);
         } catch (\Exception $e) {
+            Log::error("Update product failed!");
             return response()->json(['message' => $e->getMessage()], 404);
         }
     }
@@ -103,13 +110,14 @@ class ProductionController extends Controller
             $product = Product::find($id);
 
             if (!$product) {
-                throw new \Exception('Bản ghi không tồn tại');
+                throw new \Exception('The record does not exist');
             }
 
             $product->delete();
-
-            return response()->json(['message' => 'Xóa bản ghi thành công']);
+            Log::info("Delete product success");
+            return response()->json(['message' => 'Record delete successful']);
         } catch (\Exception $e) {
+            Log::error("Delete product failed!");
             return response()->json(['message' => $e->getMessage()], 404);
         }
     }
